@@ -20,7 +20,7 @@
 
 ### 2.Python的语法
 
-> 不同于C类语言,Python使用冒号":"加缩进(四个空格或一个Tab,不能混用)划分代码块,而不是括号加花括号
+> 不同于类C语言,Python使用冒号":"加缩进(四个空格或一个Tab,不能混用)划分代码块,而不是括号加花括号
 
 ### 3.Python中的注释
 
@@ -171,16 +171,14 @@
 > python 中没有字符,一对单引号或者双引号代表字符串
 > ```
 >
+> ```
+>同列表
+> ```
 > 
->
-> ```
-> 同列表
-> ```
->
 > 此外,字符串还有的常用操作
 >
 > ```
-> "*".join(string)	# 拼接
+>"*".join(string)	# 拼接
 > string.split(sep = "")  # 拆分
 > string.format()		# 格式化  "{0}, {1}".format("hello", "world") 或则使用
 > ```
@@ -310,6 +308,396 @@
 ## 四.多线程
 
 ## 五.爬虫
+
+### 0.准备工作
+
+***安装所需的第三方库***
+
+`pip install requests`
+
+`pip install bs4`
+
+`pip install lxml`
+
+***URL的理解***
+
+> URL全名为统一资源定位符
+>
+> 也就是常说的网址
+
+***选择一款合适的浏览器***
+
+> 这里推荐谷歌浏览器和火狐浏览器
+>
+> 掌握浏览器开发者工具的简单操作
+
+***爬虫一般分为三大步骤***
+
+1. 请求网址
+2. 解析网址
+3. 保存数据
+
+### 1.请求网址
+
+***利用requests模块对网页发起请求***
+
+***常用方法有***
+
+1. requests.get(url, params=None, **kwargs)	# 用get方法发送请求
+2. requests.post(url, data=None, json=None, **kwargs)    # 用post方法发送请求
+3. 其他不常用的方法有options,head,put,patch,delete
+
+***简单的例子****
+
+```Python
+import requests
+
+r = requests.get("https://www.baidu.com")	# 对百度发起get请求
+
+print(r.status_code)	# 打印状态码
+```
+
+***携带请求参数***
+
+```python
+import requests
+
+url = "http://www.csgmooc.com/spocv3api//user/login"
+
+data = {
+    "number": "20173312000**",
+    "password": "20173312000**",
+    "schoolNum": "1MzrWz0lTc**"
+}
+
+r = requests.post(url, data=data)	# 参数以字典的格式传给data形参
+
+print(r.text)
+```
+
+### 2.解析网页
+
+***常用的类库为lxml, BeautifulSoup, re(正则)***
+
+以获取豆瓣电影正在热映的电影名为例,url='https://movie.douban.com/cinema/nowplaying/beijing/'
+
+***网页分析***
+
+***部分网页源码***
+
+```html
+<ul class="lists">
+                    <li
+                        id="3878007"
+                        class="list-item"
+                        data-title="海王"
+                        data-score="8.2"
+                        data-star="40"
+                        data-release="2018"
+                        data-duration="143分钟"
+                        data-region="美国 澳大利亚"
+                        data-director="温子仁"
+                        data-actors="杰森·莫玛 / 艾梅柏·希尔德 / 威廉·达福"
+                        data-category="nowplaying"
+                        data-enough="True"
+                        data-showed="True"
+                        data-votecount="105013"
+                        data-subject="3878007"
+                    >
+                        
+```
+
+分析可知我们要的电影名称信息在li标签的data-title属性里
+
+下面开始写代码
+
+***爬虫源码展示***
+
+```python
+import requests
+from lxml import etree              # 导入库
+from bs4 import BeautifulSoup
+import re
+
+import time
+
+# 定义爬虫类
+class Spider():
+    def __init__(self):
+        self.url = 'https://movie.douban.com/cinema/nowplaying/beijing/'
+
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
+        }
+        r = requests.get(self.url,headers=self.headers)
+        r.encoding = r.apparent_encoding
+        self.html = r.text
+
+    def lxml_find(self):
+        '''用lxml解析'''
+        start = time.time()						# 三种方式速度对比
+        selector = etree.HTML(self.html)        # 转换为lxml解析的对象
+        titles = selector.xpath('//li[@class="list-item"]/@data-title')    # 这里返回的是一个列表
+        for each in titles:
+            title = each.strip()        # 去掉字符左右的空格
+            print(title)
+        end = time.time()
+        print('lxml耗时', end-start)
+
+    def BeautifulSoup_find(self):
+        '''用BeautifulSoup解析'''
+        start = time.time()
+        soup = BeautifulSoup(self.html, 'lxml')   # 转换为BeautifulSoup的解析对象()里第二个参数为解析方式
+        titles = soup.find_all('li', class_='list-item')
+        for each in titles:
+            title = each['data-title']
+            print(title)
+        end = time.time()
+        print('BeautifulSoup耗时', end-start)
+
+    def re_find(self):
+        '''用re解析'''
+        start = time.time()
+        titles = re.findall('data-title="(.+)"',self.html)
+        for each in titles:
+            print(each)
+        end = time.time()
+        print('re耗时', end-start)
+
+if __name__ == '__main__':
+    spider = Spider()
+    spider.lxml_find()
+    spider.BeautifulSoup_find()
+    spider.re_find()
+```
+
+***输出结果***
+
+```
+海王
+无名之辈
+无敌破坏王2：大闹互联网
+狗十三
+惊涛飓浪
+毒液：致命守护者
+憨豆特工3
+神奇动物：格林德沃之罪
+恐龙王
+老爸102岁
+生活万岁
+进击的男孩
+摘金奇缘
+亡命救赎
+一百年很长吗
+云上日出
+谁是坏孩子
+照相师
+缘·梦
+网络谜踪
+龙猫
+印度合伙人
+绿毛怪格林奇
+最萌警探
+春天的马拉松
+lxml耗时 0.007623910903930664
+海王
+无名之辈
+无敌破坏王2：大闹互联网
+狗十三
+惊涛飓浪
+毒液：致命守护者
+憨豆特工3
+神奇动物：格林德沃之罪
+恐龙王
+老爸102岁
+生活万岁
+进击的男孩
+摘金奇缘
+亡命救赎
+一百年很长吗
+超时空大冒险
+天渠
+爱不可及
+二十岁
+你好，之华
+冒牌搭档
+铁甲战神
+克隆人
+恐怖快递
+中国蓝盔
+阿凡提之奇缘历险
+名侦探柯南：零的执行人
+为迈克尔·杰克逊铸造雕像
+再见仍是朋友
+心迷宫
+淡蓝琥珀
+阿拉姜色
+两个俏公主
+云上日出
+谁是坏孩子
+照相师
+缘·梦
+网络谜踪
+龙猫
+印度合伙人
+绿毛怪格林奇
+最萌警探
+春天的马拉松
+BeautifulSoup耗时 0.061043500900268555
+海王
+无名之辈
+无敌破坏王2：大闹互联网
+狗十三
+惊涛飓浪
+毒液：致命守护者
+憨豆特工3
+神奇动物：格林德沃之罪
+恐龙王
+老爸102岁
+生活万岁
+进击的男孩
+摘金奇缘
+亡命救赎
+一百年很长吗
+超时空大冒险
+天渠
+爱不可及
+二十岁
+你好，之华
+冒牌搭档
+铁甲战神
+克隆人
+恐怖快递
+中国蓝盔
+阿凡提之奇缘历险
+名侦探柯南：零的执行人
+为迈克尔·杰克逊铸造雕像
+再见仍是朋友
+心迷宫
+淡蓝琥珀
+阿拉姜色
+两个俏公主
+云上日出
+谁是坏孩子
+照相师
+缘·梦
+网络谜踪
+龙猫
+印度合伙人
+绿毛怪格林奇
+最萌警探
+春天的马拉松
+re耗时 0.0004856586456298828
+```
+
+***代码说明***
+
+> ### 1. lxml
+>
+> > lxml是通过xpath来查找
+> >
+> > 使用前需使用调用ertee.HTML()方法('()'内填HTML代码)生成一个可查找的对象
+> >
+> > 常用xpath语法如下
+> >
+> > **//**  两个斜杠为向下查找孙子标签
+> >
+> > **/**   一个斜杠为查找直接儿子标签
+> >
+> > **[]**  方括号内填标签属性,如查找class属性为name的a标签,格式为a[@class="name"]
+> >
+> > **/text()**    取出标签的内容,如查找网页中的 \<a class="name">KAINHUCK\</a> 中的KAINHUCK,格式为*//a[@class="name"]/text()*
+> >
+> > **/@attr**    取出标签的属性,如查找网页中的 \<a class="name">KAINHUCK\</a> 中的class属性值name,格式为*//a[@class="name"]/@class*
+>
+> ### 2. BeautifulSoup
+>
+> >使用前需先将HTML转换为课查找对象,格式为
+> >
+> >BeautifulSoup(html, 'lxml')  
+> >
+> >html 为HTML代码, 后面的参数为转换方法(其他方法有*'html.parser'* , *'html5lib'*, 推荐使用*'lxml'*)
+> >
+> >查找方法
+> >
+> >**info =** **find('a', id='kain')**   查找第一个id属性为kain的a标签,并存进info变量中(其他标签同理)
+> >
+> >**find_all('a', class_='name')**  查找所有class属性为name的a标签(注:*class*属性需写成*'class_'*)
+> >
+> >**info.p.text**  获取第一个id属性为kain的a标签下的p标签的内容(info为上面例子里的info,其他同理)
+> >
+> >**info.p['name']**  获取第一个id属性为kain的a标签下的p标签的name属性值(info为上面例子里的info,其他同理)
+> >
+> >**当代码中有很多同级标签时**
+> >
+> >```html
+> ><p class='info-list'>
+> >   <a class='name'>text1</a>
+> >   <a class='name'>text2</a>
+> >   <a class='name'>text3</a>
+> >   <a class='name'>text4</a>
+> ></p>
+> >```
+> >
+> >示例代码如下
+> >
+> >```python
+> >from bs4 import BeautifulSoup
+> >
+> >html = '''
+> ><p class='info-list'>
+> >   <a class='name'>text1</a>
+> >   <a class='name'>text2</a>
+> >   <a class='name'>text3</a>
+> >   <a class='name'>text4</a>
+> ></p>
+> >'''
+> >soup = BeautifulSoup(html, 'lxml')
+> >texts = soup.find('p', class_='info-list')
+> >print(texts.contents[1].text)	# 输出text1
+> >print(texts.contents[2].text)	# 输出text2
+> >print(texts.contents[3].text)	# 输出text3
+> >print(texts.contents[4].text)	# 输出text4
+> >```
+> >
+> >*注意:不是从0开始*
+>
+> ### 3. re(正则表达式)
+>
+> > 正则表达式内容较多,大家可以参考[这里](http://www.runoob.com/python3/python3-reg-expressions.html)
+
+***总结***
+
+使用lxml查找时可以在目标网页按F12调出开发者窗口然后再在按Ctrl+f查找,在查找栏里输入你的xpath语法可以检查是否能找到对应内容
+
+可以从看例子的输出中看出三种方法的速度
+
+> lxml耗时 0.007623910903930664
+>
+> BeautifulSoup耗时 0.061043500900268555
+>
+> re耗时 0.0004856586456298828
+
+***对以上三种最常用的解析网页的方法做个对比***
+
+|            | lxml | BeautifulSoup | re   |
+| ---------- | ---- | ------------- | ---- |
+| 语法难易度 | 简单 | 简单          | 复杂 |
+| 查找速度   | 较快 | 慢            | 快   |
+
+综上,对于网页内容的解析,这里推荐新手使用lxml方法,而对速度有要求就使用正则表达式(入门有点困难)
+
+### 3.存储数据
+
+### 4.反反爬虫
+
+### 5.提升爬虫的速度
+
+### 6.爬取动态网站
+
+### 7.爬虫框架
+
+
 
 ## 六.网络编程
 
