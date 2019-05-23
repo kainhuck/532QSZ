@@ -294,3 +294,58 @@ sudo docker run -d -p 5000:5000 -v /opt/data/registry:/tmp/registry registry
 
 ### 4.管理私有仓库镜像
 
+假设搭建私有仓库的地址为*10.0.2.2:5000*
+
+查看已有镜像
+
+**sudo docker images**
+
+给镜像贴标签
+
+**sudo docker tag ubuntu:14.04 10.0.2.2:5000/test**
+
+上传镜像
+
+**sudo docker push 10.0.2.2:5000/test**
+
+用curl查看仓库10.0.2.2:5000中的镜像
+
+**curl http://10.0.2.2:5000/()/search**
+
+从另一台可访问10.0.2.2:5000的电脑上下载该镜像
+
+**sudo docker pull 10.0.2.2:5000/test**
+
+## 五.数据管理
+
+### 1.数据卷
+
+数据卷是一种可供容器使用的特殊目录,它绕过文件系统,具有以下特性:
+
+1. 数据卷可以在容器之间共享和重用
+2. 对数据卷的修改会立马生效
+3. 对数据卷的更新不会影响镜像
+4. 卷会一直存在,直到没有容器使用
+
+#### ①.在容器内创建一个数据卷
+
+在执行**docker run**命令是加上 **-v** 参数创建数据卷(可以创建多个),例如
+
+使用training/webapp镜像创建一个web容器,并创建一个数据卷挂载到容器的/webapp目录:
+
+**sudo docker run -d -P --name web -v /webapp training/webapp python app.py**
+
+*-P 是允许外部访问容器需要暴露的端口*
+
+#### ③.挂载一个主机目录作为数据卷
+
+挂载一主机的/src/webapp目录到容器的/opt/webapp目录
+
+**sudo docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py**
+
+*注意:必须为绝对路径,默认权限为读写(rw)*
+
+设置为只读(ro):
+
+**sudo docker run -d -P --name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py**
+
