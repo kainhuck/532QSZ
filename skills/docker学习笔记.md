@@ -353,6 +353,8 @@ sudo docker run -d -p 5000:5000 -v /opt/data/registry:/tmp/registry registry
 
 **sudo docker run --rm -it -v ~/.bash_history:/.bash_history ubuntu /bin/bash**
 
+*注:--rm标记会使容器使用完后立即删除,不能和-d同时使用*
+
 ### 2.数据卷容器
 
 
@@ -393,4 +395,259 @@ sudo docker run -d -p 5000:5000 -v /opt/data/registry:/tmp/registry registry
 ## 六.网络基础配置
 
 ### 1.端口映射实现访问容器
+
+#### ①.从外部访问容器应用
+
+使用-P随机映射一个49000~49900的端口到容器内部
+
+**sudo docker run -d -P training/webapp python app.py**
+
+查看:
+
+**sudo docker ps -l**
+
+或者:
+
+**sudo docker logs -f CONTAINER**
+
+-p可以指定端口,并且可以绑定容器,格式为:
+
+**ip:hostPort:containerPort | ip::containerPort | hostPort:containerPort**
+
+#### ②.映射所有接口地址
+
+hostPort:containerPort
+
+**sudo docker run -d -p 5000:5000 -p 3000:80 training/webapp python app.py**
+
+#### ③映射指定地址到指定端口
+
+ip:hostPort"containerPort
+
+**sudo docker run -d -p 127.0.0.1:5000:5000 training/webapp python app.py**
+
+#### ④.映射指定地址到任意端口
+
+ip::containerPort
+
+系统自动分配:
+
+**sudo docker run -d -p 127.0.0.1::5000 training/webapp python app.py**
+
+指定udp端口:
+
+**sudo docker run -d -p 127.0.0.1:5000:5000/udp training/webapp python app.py**
+
+#### ⑤.查看映射端口配置
+
+sudo docker port CONATINER 5000
+
+### 2.容器互联实现容器间通信
+
+#### ①.自定义容器命名
+
+使用--name标记
+
+**sudo docker run -d -P --name web training/webapp python app.py**
+
+使用docker ps来验证设定的名字
+
+**sudo docker ps -l**
+
+使用docker inspect来查看容器的名字
+
+**sudo docker inspect -f "{{ .Name }}" aed84ee21bds**
+
+*注意:名字唯一*
+
+#### ②.容器互联
+
+使用--link参数
+
+例如:
+
+1. 创建新的数据库容器
+
+   **sudo docker run -d --name db training/postgres**
+
+2. 删除之前创建的web容器
+
+   **sudo docker rm -f web**
+
+3. 创建一个新的web容器,并将它连接到db容器
+
+   **sudo docker run -d -P --name web --link db:db training/webapp python app.py**
+
+--link的格式:
+
+--link name:alias
+
+name是要链接的容器的名称
+
+alias是这个链接的别名
+
+可以使用docker ps查看链接
+
+### 3.公开连接信息的两种方式
+
+#### ①.环境变量
+
+env命令
+
+**sudo docker run --rm --name web2 --link db:db training/webapp env**
+
+前缀采用大写的连接别名
+
+#### ②./etc/hosts文件
+
+进入容器后
+
+cat /etc/hosts
+
+## 七.使用Dockerfile创建镜像
+
+### 1.基本结构
+
+Dockerfile分为四个部分
+
+1. 基础镜像信息
+2. 维护者信息
+3. 镜像操作指令
+4. 容器启动时执行指令
+
+```dockerfile
+# This dockerfile uses the ubuntu image
+# VERSION 2 -EDITION 1
+# Author: docker_user
+# Command format: Instruction [arguments / command] . .
+
+# 第一行必须指定基础的镜像
+FROM ubuntu
+
+# 维护者信息
+MAINTAINER docker_user docker_usr@email.com
+
+# 镜像的操作指令
+RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
+RUN apt-get update && apt-get install -y nginx
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+
+# 容器启动时执行的命令
+CMD /usr/sbin/nginx
+```
+
+### 2.指令
+
+一般格式为
+
+INSTRUCTION arguments
+
+#### ①.FROM
+
+格式为:
+
+**FROM \<image>**
+
+第一条指令必须为FROM,并且如果在同一个Dockerfile中创建多个镜像时,可以使用多个FROM
+
+#### ②.MAINTAINER
+
+格式为:
+
+**MAINTAINER \<name>**
+
+指定维护者信息
+
+#### ③.RUN
+
+格式为:
+
+**RUN \<command>**
+
+或
+
+**RUN ["executable", "paraml", "param2"]**
+
+前者在shell终端中运行指令, 即/bin/sh -c;后者使用exec执行.
+
+指定使用其他终端也可以使用第二种,例如
+
+RUN ["/bin/bash", "-c", "echo hello"]
+
+每条RUN指令将在当前镜像的基础上执行指定的命令,并提交为新的镜像.当命令较长时可以使用**\\**来换行.
+
+#### ④.CMD
+
+支持三种格式:
+
+**CMD ["executable", "paraml", "param2"]**	使用exec执行,推荐方式
+
+**CMD command param1 param2**	在/bin/sh中执行,提供给需要交互的应用
+
+**CMD ["paraml", "param2"]**	提供给ENTRYPOINT的默认参数
+
+容器启动时执行的命令,一个Dockerfile文件只能有一条CMD命令
+
+#### ⑤.EXPOSE
+
+格式为:
+
+EXPOSE \<port> [\<port>. . .]
+
+例如:
+
+**EXPORT 22 80 8443**
+
+告诉Docker服务端暴露的端口号,供互联系统使用.
+
+#### ⑥.ENV
+
+格式为:
+
+ENV \<key> \<value>
+
+指定一个环境变量,会被后续RUN指令使用,并在容器中运行时保持.
+
+例如:
+
+```dockerfile
+ENV PG_MAJOR 9.3
+ENV PG_VERSION 9.3.4
+RUN curl -SL http://example.com/postgres-$PG_VERSION.tar.xz | tar -xJC /usr/src/postgress && ...
+ENV PATH /usr/local/postgres-$PG_MAJOR/bin:$PATH
+```
+
+#### ⑦.ADD
+
+格式为:
+
+ADD \<src> \<dest>
+
+该指令将复制指定的\<src>到容器中的\<dest>.其中\<src>可以是Dockerfile所在目录的一个相对路径(文件或目录);也可以是一个URL;还可以是一个tar文件(自动解压为目录)
+
+#### ⑧.COPY
+
+格式为:
+
+COPY \<src> \<dest>
+
+复制本地主机的\<src>(为Dockerfile所在目录的相对路径,文件或目录)为容器中的\<dest>.路径不存在时自动创建.
+
+当使用本地目录为
+
+#### ⑨.ENTRYPOINT
+
+#### ⑩.VOLUME
+
+#### 11.USER
+
+#### 12.WORKDIR
+
+#### 13.ONBUILD
+
+
+
+### 3.创建镜像
+
+
 
