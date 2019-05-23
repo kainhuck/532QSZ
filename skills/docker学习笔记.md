@@ -349,3 +349,48 @@ sudo docker run -d -p 5000:5000 -v /opt/data/registry:/tmp/registry registry
 
 **sudo docker run -d -P --name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py**
 
+#### ④.挂载一个本地主机文件作为数据卷
+
+**sudo docker run --rm -it -v ~/.bash_history:/.bash_history ubuntu /bin/bash**
+
+### 2.数据卷容器
+
+
+用于容器之间共享数据
+
+1. 创建数据卷容器dbdata,并在其中创建一个数据卷挂载到/dbdata:
+
+   **sudo docker run -it -v /dbdata --name dbdata ubuntu**
+
+2. 在其他容器中使用--volumes-from来挂载dbdata容器中的数据卷(db为容器名)
+
+   **sudo docker run -it --volumes-from dbdata --name db ubuntu**
+
+3. 这样就已经实现数据共享了,注意--volumes-from可以使用多次
+
+### 3.利用数据卷容器迁移数据
+
+#### ①.备份
+
+**sudo docker run --volumes-from dbdata -v $(pwd):/backup --name worker ubuntu tar cvf /backup/backup.tar /dbdata**
+
+解释:
+
+> 首先利用ubuntu镜像创建了一个容器worker.使用--volumes-from dbdata参数来让worker容器挂载dbdata容器的数据卷(即dbdata数据卷);使用-v $(pwd):/backup参数来挂载本地的当前目录到worker容器的/backup目录.
+>
+> worker容器启动后,使用了tar cvf /backup/backup.tar /dbdata命令来将/dbdata下的内容备份为容器内的/backup/backup.tar,即宿主主机当前目录下的backup.tar.
+
+#### ②.恢复
+
+1. 先创建一个带有数据卷的容器dbdata2:
+
+   **sudo docker run -v /dbdata --name dbdata2 ubuntu /bin/bash**
+
+2. 创建一个新的容器挂载dbdata2的容器,并使用untar解压备份文件到所挂载的容器卷中即可
+
+   **sudo docker run --volumes-from dbdata2 -v $(pwd):/backup busybox tar xvf /backup/backup.tar**
+
+## 六.网络基础配置
+
+### 1.端口映射实现访问容器
+
