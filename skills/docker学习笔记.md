@@ -10,6 +10,8 @@ sudo pacman -S docker
 
 **sudo docker pull 镜像名[:标签名]**
 
+*注:docker镜像保存在 /var/lib/docker/ 目录下*
+
 ### 2.查看镜像信息
 
 **sudo docker images**
