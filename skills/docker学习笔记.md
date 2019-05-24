@@ -8,29 +8,29 @@ sudo pacman -S docker
 
 ### 1.获取镜像
 
-sudo docker pull 镜像名[:标签名]
+**sudo docker pull 镜像名[:标签名]**
 
 ### 2.查看镜像信息
 
-sudo docker images
+**sudo docker images**
 
 ### 3.给镜像添加标签
 
-sudo docker tag 镜像名:标签名 新名字:新标签名
+**sudo docker tag 镜像名:标签名 新名字:新标签名**
 
 ### 4.搜寻镜像
 
-sudo docker search 镜像名
+**sudo docker search 镜像名**
 
 ### 5.删除镜像
 
-sudo docker rmi 镜像名标签名
+**sudo docker rmi 镜像名标签名**
 
-sudo docker rmi 镜像ID
+**sudo docker rmi 镜像ID**
 
 *注:无法删除已经创建容器的镜像*
 
-sudo docker rmi -f 镜像名或ID		# 强制删除,不推荐,应先删除容器
+**sudo docker rmi -f 镜像名或ID**		# 强制删除,不推荐,应先删除容器
 
 ### 6.创建镜像
 
@@ -51,7 +51,7 @@ sudo docker rmi -f 镜像名或ID		# 强制删除,不推荐,应先删除容器
 例:
 
 ```
- kain@archlinux ~$ sudo docker commit -a "kain huck" -m "first build a image" e4f60aee5987 my_image
+sudo docker commit -a "kain huck" -m "first build a image" e4f60aee5987 my_image
 ```
 
 #### ②.基于本地模板导入
@@ -62,33 +62,33 @@ http://openvz.org/Download/templates/precreated
 
 假如下载了一个ubuntu-14.04的模板压缩包后,可以使用一下命令导入:
 
-sudo cat ubuntu-14.04-x86_64-minimal.tar.gz | docker import - ubuntu:14.04
+**sudo cat ubuntu-14.04-x86_64-minimal.tar.gz | docker import - ubuntu:14.04**
 
 ### 7.存出和载入镜像
 
 #### ①.存出镜像
 
-sudo docker save -o 镜像名.tar 镜像名
+**sudo docker save -o 镜像名.tar 镜像名**
 
 #### ②.载入镜像
 
-sudo docker load --input 镜像名.tar
+**sudo docker load --input 镜像名.tar**
 
 或
 
-sudo docker load < 镜像名.tar
+**sudo docker load < 镜像名.tar**
 
 ### 8.上传镜像
 
 默认上传到DockerHub官方仓库(需要登录),格式为:
 
-docker push NAME[":TAG"]
+**docker push NAME[":TAG"]**
 
 用户在DockerHub网站注册后,即可上传自制镜像.例如用户user上传本地的test:latest镜像,可以先添加新的标签user/test:latest,然后用docker push命令上传镜像:
 
-sudo docker tag test:latest user/test:latest
+**sudo docker tag test:latest user/test:latest**
 
-sudo docker push user/test:latest
+**sudo docker push user/test:latest**
 
 第一次使用时,会提示输入登录信息或进行注册
 
@@ -116,7 +116,7 @@ sudo docker push user/test:latest
 
 使用docker run命令,例如:
 
-sudo docker run ubuntu /bin/echo 'hello world'
+**sudo docker run ubuntu /bin/echo 'hello world'**
 
 > 后台的操作包括
 >
@@ -136,7 +136,7 @@ sudo docker run ubuntu /bin/echo 'hello world'
 
 启动一个bash终端
 
-sudo docker run -t -i ubuntu:14.04 /bin/bash
+**sudo docker run -t -i ubuntu:14.04 /bin/bash**
 
 > -t	# 分配一个伪终端
 >
@@ -148,7 +148,7 @@ sudo docker run -t -i ubuntu:14.04 /bin/bash
 
 通过 **-d** 参数来实现,例如:
 
-sudo docker run -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"
+**sudo docker run -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; done"**
 
 利用 **sudo docker ps** 查看运行的容器
 
@@ -156,7 +156,7 @@ sudo docker run -d ubuntu /bin/sh -c "while true; do echo hello world; sleep 1; 
 
 获取容器输出信息
 
-sudo docker logs CONTAINER
+**sudo docker logs CONTAINER**
 
 ### 5.终止容器
 
@@ -290,7 +290,7 @@ http://dockerpool.com
 
 默认将仓库创建在容器的/tmp/registry目录下,可使用-v参数更改为本地路径,如:
 
-sudo docker run -d -p 5000:5000 -v /opt/data/registry:/tmp/registry registry
+**sudo docker run -d -p 5000:5000 -v /opt/data/registry:/tmp/registry registry**
 
 ### 4.管理私有仓库镜像
 
@@ -592,7 +592,7 @@ RUN ["/bin/bash", "-c", "echo hello"]
 
 格式为:
 
-EXPOSE \<port> [\<port>. . .]
+**EXPOSE \<port> [\<port>. . .]**
 
 例如:
 
@@ -604,7 +604,7 @@ EXPOSE \<port> [\<port>. . .]
 
 格式为:
 
-ENV \<key> \<value>
+**ENV \<key> \<value>**
 
 指定一个环境变量,会被后续RUN指令使用,并在容器中运行时保持.
 
@@ -621,7 +621,7 @@ ENV PATH /usr/local/postgres-$PG_MAJOR/bin:$PATH
 
 格式为:
 
-ADD \<src> \<dest>
+**ADD \<src> \<dest>**
 
 该指令将复制指定的\<src>到容器中的\<dest>.其中\<src>可以是Dockerfile所在目录的一个相对路径(文件或目录);也可以是一个URL;还可以是一个tar文件(自动解压为目录)
 
@@ -629,7 +629,7 @@ ADD \<src> \<dest>
 
 格式为:
 
-COPY \<src> \<dest>
+**COPY \<src> \<dest>**
 
 复制本地主机的\<src>(为Dockerfile所在目录的相对路径,文件或目录)为容器中的\<dest>.路径不存在时自动创建.
 
@@ -639,9 +639,9 @@ COPY \<src> \<dest>
 
 格式为:
 
-ENTRYPOINT ["executable", "parama1", "param2"]
+**ENTRYPOINT ["executable", "parama1", "param2"]**
 
-ENTRYPOINT command param1 param2 (shell中执行)
+**ENTRYPOINT command param1 param2** (shell中执行)
 
 配置容器启动后执行的命令,并且不可被docker run提供的参数覆盖.
 
@@ -651,7 +651,7 @@ ENTRYPOINT command param1 param2 (shell中执行)
 
 格式为:
 
-VOLUME ["/data"]
+**VOLUME ["/data"]**
 
 创建一个可从本地主机或其他容器挂载的挂载点,一般用来存放数据库和需要保持的数据等.
 
@@ -659,7 +659,7 @@ VOLUME ["/data"]
 
 格式为:
 
-USER daemon
+**USER daemon**
 
 指定运行容器时的用户名或UID,后续的RUN也会使用指定用户.
 
@@ -673,7 +673,7 @@ RUN groupadd -r postgres && useradd -r -g postgres postgres
 
 格式为:
 
-WORKDIR /path/to/workdir
+**WORKDIR /path/to/workdir**
 
 为后续的RUN, CMD, ENTRYPOINT指令配置工作目录.
 
@@ -693,7 +693,7 @@ RUN pwd
 
 格式为:
 
-ONBUILD [INSTRUCTION]
+**ONBUILD [INSTRUCTION]**
 
 配置当所创建的镜像作为其他新创建镜像的基础镜像时,所执行的操作指令.例如,Dockerfile使用如下的内容创建镜像image-A.
 
@@ -725,7 +725,7 @@ RUN /usr/local/bin/python-build --dir /app/src
 
 另外,可以通过.dockeringnore文件(每一行添加一条匹配模式)来让Docker忽略路径下的目录和文件.
 
-要指定镜像的标签信息,可以通过**-t**选项.
+要指定镜像的标签信息,可以通过 **-t** 选项.
 
 例如,指定Dockerfile所在路径为/tmp/docker_builder/,并且希望生成镜像标签为build_repo/first_image,可以使用下面的命令:
 
