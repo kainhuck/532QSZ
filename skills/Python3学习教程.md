@@ -162,7 +162,21 @@
 > 元组(tuple):
 >
 > ```
-> 同列表
+> 元组是不可变序列,通常用于储存异构数据的多项集(例如由enumerate() 内置函数所产生的二元组)。元组也被用于需要同构数据的不可变序列的情况(例如允许存储到set 或dict 的实例)。
+> 
+> class tuple([iterable ])
+>     可以用多种方式构建元组:
+>     • 使用一对圆括号来表示空元组: ()
+>     • 使用一个后缀的逗号来表示单元组: a, 或 (a,)
+>     • 使用以逗号分隔的多个项: a, b, c or (a, b, c)
+>     • 使用内置的tuple(): tuple() 或 tuple(iterable)
+> 
+> 请注意决定生成元组的其实是逗号而不是圆括号。圆括号只是可选的,生成空元组或需要避免语法歧
+> 义的情况除外。例如,f(a, b, c) 是在调用函数时附带三个参数,而 f((a, b, c)) 则是在调用函数
+> 时附带一个三元组。
+> 元组实现了所有一般 序列的操作。
+> 
+> 务必注意元组不可改变
 > ```
 >
 > 字符串(str):
@@ -172,13 +186,13 @@
 > ```
 >
 > ```
->同列表
+> 同列表
 > ```
-> 
+>
 > 此外,字符串还有的常用操作
 >
 > ```
->"*".join(string)	# 拼接
+> "*".join(string)	# 拼接
 > string.split(sep = "")  # 拆分
 > string.format()		# 格式化  "{0}, {1}".format("hello", "world") 或则使用
 > ```
@@ -302,6 +316,515 @@
 > \__name__ == "\__main__"
 
 ## 二.Python进阶
+
+*这个模块参考了这篇文章 -> <https://docs.pythontab.com/interpy/*>
+
+### 0.`*args` 和 `**kwargs`
+
+首先让我告诉你, 其实并不是必须写成`*args` 和`**kwargs`。 只有变量前面的 `*`(星号)才是必须的. 你也可以写成`*var` 和`**vars`. 而写成`*args` 和`**kwargs`只是一个通俗的命名约定。 那就让我们先看一下`*args`吧。
+
+#### *args的例子
+
+```Python
+# *args用于输入不定数量的参数
+def args_test(num, *args):
+    print("第1个元素： " + str(num))
+    for i in range(len(args)):
+        print("第" + str(i+2) + "个元素： " + str(args[i]))
+
+# args_test(123,64,12,7,99)
+# 输出：
+# 第1个元素： 123
+# 第2个元素： 64
+# 第3个元素： 12
+# 第4个元素： 7
+# 第5个元素： 99
+
+--------------------------------------------------------------------------
+In [1]: def f(*args): 
+   ...:     print(type(args)) 
+   ...:                                                                                       
+
+In [2]: f(1,2,3,4,5,6)                                                                        
+<class 'tuple'>
+# 可见args为元组类型
+```
+
+#### **kwargs
+
+```python 
+# **kwargs 允许你将不定长度的键值对, 作为参数传递给一个函数。 如果你想要在一个函数里处理带名字的参数, 你应该使用**kwargs。
+def kwargs_test_1(name, age, sex):
+    print("name:", name)
+    print("age:", age)
+    print("sex:", sex)
+
+# 普通用法
+kwargs_test_1("kain", 18, "man")
+
+# **kwargs用法
+me = {
+    "name": "kain",
+    "age": 18,
+    "sex": "man"
+}
+kwargs_test_1(**me)
+----------------------------------------------------------------------------
+In [4]: def kwargs_test_2(**kwargs): 
+   ...:     # for item in kwargs: 
+   ...:     #     print("{0} -> {1}".format(item, kwargs[item])) 
+   ...:     for key, value in kwargs.items(): 
+   ...:         print("{0} -> {1}".format(key, value)) 
+   ...:                                                                                       
+
+In [5]: kwargs_test_2(name="kain", age=18, sex="man")                                         
+name -> kain
+age -> 18
+sex -> man
+
+```
+
+#### 同时具有*args和**kwargs
+
+```Python
+# 那么如果你想在函数里同时使用所有这三种参数， 顺序是这样的：
+some_func(fargs, *args, **kwargs)
+```
+
+### 1.生成器（Generators）
+
+#### 可迭代对象(Iterable)
+
+Python中任意的对象，只要它定义了可以返回一个迭代器的`__iter__`方法，或者定义了可以支持下标索引的`__getitem__`方法(这些双下划线方法会在其他章节中全面解释)，那么它就是一个可迭代对象。
+
+#### 迭代器(Iterator)
+
+任意对象，只要定义了`next`(Python2) 或者`__next__`方法，它就是一个迭代器。
+
+#### 迭代(Iteration)
+
+用简单的话讲，它就是从某个地方（比如一个列表）取出一个元素的过程。当我们使用一个循环来遍历某个东西时，这个过程本身就叫迭代。
+
+#### 生成器(Generators)
+
+生成器也是一种迭代器，但是你只能对其迭代一次。
+
+**这是因为它们并没有把所有的值存在内存中，而是在运行时生成值。**
+
+通过遍历来使用它们，要么用一个“for”循环，要么将它们传递给任意可以进行迭代的函数和结构。
+
+大多数时候生成器是以函数来实现的。然而，它们并不返回一个值，而是`yield`(暂且译作“生出”)一个值。
+
+```python
+def generator_function():
+    for i in range(10):
+        yield i
+
+for item in generator_function():
+    print(item)
+
+# Output: 0
+# 1
+# 2
+# 3
+# 4
+# 5
+# 6
+# 7
+# 8
+# 9
+```
+
+*生成器最佳应用场景是：你不想同一时间将所有计算出来的大量结果集分配到内存当中，特别是结果集里还包含循环。*
+
+```PYTHON
+# 生成器实现斐波那契数列
+def fib(n):
+    a = b = 1
+    for i in range(n):
+        yield a
+        a, b = b, a + b
+
+# for x in fib(100):
+#     print(x)
+```
+
+**next()内置函数**
+
+```python
+def generator_function():
+    for i in range(3):
+        yield i
+
+gen = generator_function()
+print(next(gen))
+# Output: 0
+print(next(gen))
+# Output: 1
+print(next(gen))
+# Output: 2
+print(next(gen))
+# Output: Traceback (most recent call last):
+#            File "<stdin>", line 1, in <module>
+#         StopIteration
+```
+
+我们可以看到，在`yield`掉所有的值后，`next()`触发了一个`StopIteration`的异常。基本上这个异常告诉我们，所有的值都已经被`yield`完了。你也许会奇怪，为什么我们在使用`for`循环时没有这个异常呢？啊哈，答案很简单。`for`循环会自动捕捉到这个异常并停止调用`next()`
+
+**可迭代对象不等同于迭代器**
+
+```python
+my_string = "Yasoob"
+next(my_string)
+# Output: Traceback (most recent call last):
+#      File "<stdin>", line 1, in <module>
+#    TypeError: str object is not an iterator
+```
+
+好吧，这不是我们预期的。这个异常说那个`str`对象不是一个迭代器。对，就是这样！它是一个可迭代对象，而不是一个迭代器。这意味着它支持迭代，但我们不能直接对其进行迭代操作。那我们怎样才能对它实施迭代呢？是时候学习下另一个内置函数，`iter`。它将根据一个可迭代对象返回一个迭代器对象。这里是我们如何使用它：
+
+```python
+my_string = "Yasoob"
+my_iter = iter(my_string)
+next(my_iter)
+# Output: 'Y'
+```
+
+### 2.Map，Filter 和 Reduce
+
+#### Map
+
+`Map`会将一个函数映射到一个输入列表的所有元素上。这是它的规范：
+
+**规范**
+
+```python
+map(function_to_apply, list_of_inputs)
+```
+
+大多数时候，我们要把列表中所有元素一个个地传递给一个函数，并收集输出。比方说：
+
+```python 
+items = [1, 2, 3, 4, 5]
+squared = []
+for i in items:
+    squared.append(i**2)
+```
+
+`Map`可以让我们用一种简单而漂亮得多的方式来实现。就是这样：
+
+```python
+items = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x**2, items))
+
+---------------------------------------------------------------------
+In [20]: def fun(x): 
+    ...:     return x*x 
+    ...:                                                                                                                                             
+
+In [21]: a = [1,2,3,4]                                                                                                                               
+
+In [22]: b = map(fun, a)                                                                                                                             
+
+In [23]: b                                                                                                                                           
+Out[23]: <map at 0x7f7ae9822438>
+
+In [24]: list(b)                                                                                                                                     
+Out[24]: [1, 4, 9, 16]
+
+```
+
+大多数时候，我们使用匿名函数(lambdas)来配合`map`, 所以我在上面也是这么做的。 不仅用于一列表的输入， 我们甚至可以用于一列表的函数！
+
+```python
+def multiply(x):
+        return (x*x)
+def add(x):
+        return (x+x)
+
+funcs = [multiply, add]
+for i in range(5):
+    value = map(lambda x: x(i), funcs)
+    print(list(value))
+    # 译者注：上面print时，加了list转换，是为了python2/3的兼容性
+    #        在python2中map直接返回列表，但在python3中返回迭代器
+    #        因此为了兼容python3, 需要list转换一下
+
+# Output:
+# [0, 0]
+# [1, 2]
+# [4, 4]
+# [9, 6]
+# [16, 8]
+```
+
+#### Filter
+
+顾名思义，`filter`过滤列表中的元素，并且返回一个由所有符合要求的元素所构成的列表，`符合要求`即函数映射到该元素时返回值为True. 这里是一个简短的例子：
+
+```python
+number_list = range(-5, 5)
+less_than_zero = filter(lambda x: x < 0, number_list)
+print(list(less_than_zero))  
+# 译者注：上面print时，加了list转换，是为了python2/3的兼容性
+#        在python2中filter直接返回列表，但在python3中返回迭代器
+#        因此为了兼容python3, 需要list转换一下
+
+# Output: [-5, -4, -3, -2, -1]
+```
+
+这个`filter`类似于一个`for`循环，但它是一个内置函数，并且更快。
+
+**对比map和filter**
+
+```python
+In [34]: num_list = range(-5,5)                                                                                                                      
+
+In [35]: less_zero = filter(lambda x: x<0, num_list)                                                                                                 
+
+In [36]: less_zero2 = map(lambda x: x<0, num_list)                                                                                                   
+
+In [37]: list(less_zero)                                                                                                                             
+Out[37]: [-5, -4, -3, -2, -1]
+
+In [38]: list(less_zero2)                                                                                                                            
+Out[38]: [True, True, True, True, True, False, False, False, False, False]
+
+```
+
+可以看出map返回的是return的值,和filter返回的是自变量
+
+#### Reduce
+
+当需要对一个列表进行一些计算并返回结果时，`Reduce` 是个非常有用的函数。举个例子，当你需要计算一个整数列表的乘积时。
+
+通常在 python 中你可能会使用基本的 for 循环来完成这个任务。
+
+现在我们来试试 reduce：
+
+```python
+from functools import reduce
+product = reduce( (lambda x, y: x * y), [1, 2, 3, 4] )
+
+# Output: 24
+```
+
+### 3.set(集合)数据结构
+
+`set`(集合)是一个非常有用的数据结构。它与列表(`list`)的行为类似，区别在于`set`不能包含重复的值。
+这在很多情况下非常有用。例如你可能想检查列表中是否包含重复的元素，你有两个选择，第一个需要使用`for`循环，就像这样：
+
+```Python
+some_list = ['a', 'b', 'c', 'b', 'd', 'm', 'n', 'n']
+
+duplicates = []
+for value in some_list:
+    if some_list.count(value) > 1:
+        if value not in duplicates:
+            duplicates.append(value)
+
+print(duplicates)
+### 输出: ['b', 'n']
+```
+
+但还有一种更简单更优雅的解决方案，那就是使用`集合(sets)`，你直接这样做：
+
+```python
+some_list = ['a', 'b', 'c', 'b', 'd', 'm', 'n', 'n']
+duplicates = set([x for x in some_list if some_list.count(x) > 1])
+print(duplicates)
+### 输出: set(['b', 'n'])
+```
+
+集合还有一些其它方法，下面我们介绍其中一部分。
+
+**交集**
+
+你可以对比两个集合的交集（两个集合中都有的数据），如下：
+
+```python
+valid = set(['yellow', 'red', 'blue', 'green', 'black'])
+input_set = set(['red', 'brown'])
+print(input_set.intersection(valid))
+### 输出: set(['red'])
+```
+
+**差集**
+
+你可以用差集(difference)找出无效的数据，相当于用一个集合减去另一个集合的数据，例如：
+
+```python
+valid = set(['yellow', 'red', 'blue', 'green', 'black'])
+input_set = set(['red', 'brown'])
+print(input_set.difference(valid))
+### 输出: set(['brown'])
+```
+
+你也可以用符号来创建集合，如：
+
+```Python
+a_set = {'red', 'blue', 'green'}
+print(type(a_set))
+### 输出: <type 'set'>
+```
+
+### 4.三元运算符
+
+三元运算符通常在Python里被称为条件表达式，这些表达式基于真(true)/假(not)的条件判断，在Python 2.4以上才有了三元操作。
+
+下面是一个伪代码和例子：
+
+**伪代码:**
+
+```Python
+#如果条件为真，返回真 否则返回假
+condition_is_true if condition else condition_is_false
+```
+
+**例子:**
+
+```Python
+is_fat = True
+state = "fat" if is_fat else "not fat"
+```
+
+它允许用简单的一行快速判断，而不是使用复杂的多行`if`语句。 这在大多数时候非常有用，而且可以使代码简单可维护。
+
+另一个晦涩一点的用法比较少见，它使用了元组，请继续看：
+
+**伪代码:**
+
+```Python
+#(返回假，返回真)[真或假]
+(if_test_is_false, if_test_is_true)[test]
+```
+
+**例子:**
+
+```Python
+fat = True
+fitness = ("skinny", "fat")[fat]
+print("Ali is ", fitness)
+#输出: Ali is fat
+```
+
+这之所以能正常工作，是因为在Python中，True等于1，而False等于0，这就相当于在元组中使用0和1来选取数据。
+
+上面的例子没有被广泛使用，而且Python玩家一般不喜欢那样，因为没有Python味儿(Pythonic)。这样的用法很容易把真正的数据与true/false弄混。
+
+另外一个不使用元组条件表达式的缘故是因为在**元组中会把两个条件都执行**，而 `if-else` 的条件表达式不会这样。
+
+例如:
+
+```python
+condition = True
+print(2 if condition else 1/0)
+#输出: 2
+
+print((1/0, 2)[condition])
+#输出ZeroDivisionError异常
+```
+
+这是因为在元组中是先建数据，然后用True(1)/False(0)来索引到数据。 而`if-else`条件表达式遵循普通的`if-else`逻辑树， 因此，如果逻辑中的条件异常，或者是重计算型（计算较久）的情况下，最好尽量避免使用元组条件表达式。
+
+### 5.装饰器
+
+装饰器(Decorators)是Python的一个重要部分。简单地说：他们是修改其他函数的功能的函数。他们有助于让我们的代码更简短，也更Pythonic（Python范儿）。
+
+#### 一切皆对象
+
+首先我们来理解下Python中的函数
+
+```python
+def hi(name="yasoob"):
+    return "hi " + name
+
+print(hi())
+# output: 'hi yasoob'
+
+# 我们甚至可以将一个函数赋值给一个变量，比如
+greet = hi
+# 我们这里没有在使用小括号，因为我们并不是在调用hi函数
+# 而是在将它放在greet变量里头。我们尝试运行下这个
+
+print(greet())
+# output: 'hi yasoob'
+
+# 如果我们删掉旧的hi函数，看看会发生什么！
+del hi
+print(hi())
+#outputs: NameError
+
+print(greet())
+#outputs: 'hi yasoob'
+```
+
+#### 在函数中定义函数
+
+刚才那些就是函数的基本知识了。我们来让你的知识更进一步。在Python中我们可以在一个函数中定义另一个函数：
+
+```python
+def hi(name="yasoob"):
+    print("now you are inside the hi() function")
+
+    def greet():
+        return "now you are in the greet() function"
+
+    def welcome():
+        return "now you are in the welcome() function"
+
+    print(greet())
+    print(welcome())
+    print("now you are back in the hi() function")
+
+hi()
+#output:now you are inside the hi() function
+#       now you are in the greet() function
+#       now you are in the welcome() function
+#       now you are back in the hi() function
+
+# 上面展示了无论何时你调用hi(), greet()和welcome()将会同时被调用。
+# 然后greet()和welcome()函数在hi()函数之外是不能访问的，比如：
+
+greet()
+#outputs: NameError: name 'greet' is not defined
+```
+
+那现在我们知道了可以在函数中定义另外的函数。也就是说：我们可以创建嵌套的函数。现在你需要再多学一点，就是函数也能返回函数。
+
+#### 从函数中返回函数
+
+其实并不需要在一个函数里去执行另一个函数，我们也可以将其作为输出返回出来：
+
+```python
+def hi(name="yasoob"):
+    def greet():
+        return "now you are in the greet() function"
+
+    def welcome():
+        return "now you are in the welcome() function"
+
+    if name == "yasoob":
+        return greet
+    else:
+        return welcome
+
+a = hi()
+print(a)
+#outputs: <function greet at 0x7f2143c01500>
+
+#上面清晰地展示了`a`现在指向到hi()函数中的greet()函数
+#现在试试这个
+
+print(a())
+#outputs: now you are in the greet() function
+```
+
+再次看看这个代码。在`if/else`语句中我们返回`greet`和`welcome`，而不是`greet()`和`welcome()`。为什么那样？这是因为当你把一对小括号放在后面，这个函数就会执行；然而如果你不放括号在它后面，那它可以被到处传递，并且可以赋值给别的变量而不去执行它。
+
+你明白了吗？让我再稍微多解释点细节。
+
+当我们写下`a = hi()`，`hi()`会被执行，而由于`name`参数默认是*yasoob*，所以函数`greet`被返回了。如果我们把语句改为`a = hi(name = "ali")`，那么`welcome`函数将被返回。我们还可以打印出`hi()()`，这会输出*now you are in the greet() function*。
 
 ## 三.数据库操作
 
