@@ -153,3 +153,98 @@ NameError: name 'f1' is not defined
 
 ```
 
+## 装饰器输出名字不正确
+
+```Python
+# def MyFirstDecorator(func):
+#     def wrapTheFunction():
+#         print("我装饰前面")
+#         func()
+#         print("我装饰后面")
+#     return wrapTheFunction
+#
+# @MyFirstDecorator
+# def needDecoration():
+#     print("我需要装饰")
+#
+# needDecoration()
+# 等价于执行了下面两句：
+# tempFun = MyFirstDecorator(needDecoration)
+# tempFun()
+
+# 如果我们运行如下代码会存在一个问题：
+# print(needDecoration.__name__)  # wrapTheFunction
+
+# 这里的函数被warpTheFunction替代了。它重写了我们函数的名字和注释文档(docstring)。幸运的是Python提供给我们一个简单的函数来解决这个问题，那就是functools.wraps。
+
+# from functools import wraps
+#
+# def a_new_decorator(a_func):
+#     @wraps(a_func)
+#     def wrapTheFunction():
+#         print("I am doing some boring work before executing a_func()")
+#         a_func()
+#         print("I am doing some boring work after executing a_func()")
+#     return wrapTheFunction
+#
+# @a_new_decorator
+# def a_function_requiring_decoration():
+#     """Hey yo! Decorate me!"""
+#     print("I am the function which needs some decoration to "
+#           "remove my foul smell")
+#
+# print(a_function_requiring_decoration.__name__)
+# # Output: a_function_requiring_decoration
+```
+
+## 装饰器内部函数使用return与不使用的区别
+
+```Python
+from functools import wraps
+
+def logit(func):
+    @wraps(func)
+    def with_logging(*args, **kwargs):
+        print(func.__name__ + " was called")
+        return func(*args, **kwargs)	# ----------!!这里的return!!-------------
+    return with_logging
+
+@logit
+def addition_func(x):
+   """Do some math."""
+   return x + x
+
+
+result = addition_func(4)
+print(result)	# 8,有return
+						# None, 没return
+```
+
+被装饰的函数其实就是装饰器里返回的函数
+
+如不加return上面的例子等价与
+
+```Python
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+from functools import wraps
+
+def logit(func):
+    @wraps(func)
+    def with_logging(*args, **kwargs):
+        print(func.__name__ + " was called")
+        # return func(*args, **kwargs)
+        8
+    return with_logging
+
+@logit
+def addition_func(x):
+   """Do some math."""
+   return x + x
+
+
+result = addition_func(4)
+print(result)	# None, 原因未将计算机结果8return
+# Output: addition_func was called
+```
+
