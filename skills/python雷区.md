@@ -248,3 +248,12 @@ print(result)	# None, 原因未将计算机结果8return
 # Output: addition_func was called
 ```
 
+## 打印排序列表
+
+```Python
+a = [3, 12, 4]
+# print(a.sort())	# 输出None
+a.sort()
+print(a)	# 输出[3, 4, 12]
+```
+
