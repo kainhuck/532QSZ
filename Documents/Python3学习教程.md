@@ -2773,5 +2773,159 @@ re耗时 0.0004856586456298828
 
 ## 六.网络编程
 
+### 0.网络的基础知识
+
+#### IP
+
+#### 端口
+
+#### TCP
+
+#### UDP
+
+#### SOCKET
+
+用于不同电脑不同进程之间的通信
+
+### 1.建立udp连接
+
+UDP客户端示例:
+
+```Python
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+from socket import *
+
+# SOCK_DGRAM创建UDP套接字
+udpSocket = socket(AF_INET, SOCK_DGRAM)
+
+# 绑定端口
+bindAddr = ("", 7070)
+udpSocket.bind(bindAddr)
+
+# 接收方地址
+sendAddr = ("127.0.0.1", 8080)
+
+def sendMsg():
+    # 要发送的数据
+    sendData = input("请输入数据:")
+
+    # 发送数据
+    udpSocket.sendto(sendData.encode("utf-8"), sendAddr)
+
+if __name__ == '__main__':
+    print("开始发消息...")
+    while 1:
+        sendMsg()
+
+    # 关闭连接
+    udpSocket.close()
+```
+
+*若不绑定端口,次运行Python会随机绑定,客户端一般不绑定*
+
+***Python3中发送的数据必须是字节类型***
+
+UDP服务端示例:
+
+```Python
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+from socket import *
+
+# 创建udp套接字
+udpSocket = socket(AF_INET, SOCK_DGRAM)
+
+# 绑定的端口信息
+bindAddr = ("", 8080)
+
+# 绑定端口
+udpSocket.bind(bindAddr)
+
+def recvMsg():
+    # 接收信息
+    recvData = udpSocket.recvfrom(1024)
+    print(recvData)
+   
+    # recvData = udpSocket.recv(1024)
+    # print("收到消息:", recvData.decode("utf-8"))
+
+if __name__ == '__main__':
+    print("服务端开始接收消息...")
+    while 1:
+        recvMsg()
+    
+    # 关闭连接
+    udpSocket.close()
+```
+
+注意:接受消息时使用`recvfrom()`和使用`recv()`的区别,`recv()`只接收消息,`recvfrom()`接收的内容包含发送方的IP和端口
+
+### 2.建立tcp连接
+
+客户端代码示例:
+
+```Python
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+from socket import *
+
+# 创建TCP的套接字
+tcpSocket = socket(AF_INET, SOCK_STREAM)
+
+# 绑定端口
+bindAdress = ("", 8888)
+tcpSocket.bind(bindAdress)
+
+
+# 建立连接
+targetAdress = ("127.0.0.1", 9999)
+tcpSocket.connect(targetAdress)
+
+def sendMsg():
+    msg = input("请输入数据:")
+    tcpSocket.send(msg.encode("utf-8"))
+
+if __name__ == '__main__':
+    print("客户端开始准备发送消息...")
+    while 1:
+        sendMsg()
+
+    tcpSocket.close()
+```
+
+服务端代码示例:
+
+```Python
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+from socket import *
+
+# 创建TCP套接字
+tcpSocket = socket(AF_INET, SOCK_STREAM)
+
+# 绑定端口
+bindAddr = ("", 9999)
+tcpSocket.bind(bindAddr)
+
+if __name__ == '__main__':
+    # 开始监听端口，传入的参数指定等待连接的最大数量
+    tcpSocket.listen(5)
+    print("开始监听本机9999端口,最大连接数为5...")
+    while 1:
+        sock, addr = tcpSocket.accept()
+        print("收到来自<{}>的消息 -> {}".format(addr[0]+str(addr[1]), sock.recv(1024).decode("utf-8")))
+
+    tcpSocket.close()
+
+```
+
+
+
+
+
 ## 七.网站后端(Tornado)
 
