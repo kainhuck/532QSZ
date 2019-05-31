@@ -259,6 +259,48 @@
 >
 > 递归
 
+#### global 和nonlocal的区别
+
+```Python
+def scope_test():
+    def do_local():
+        spam = "local spam"
+
+    def do_nonlocal():
+        nonlocal spam
+        spam = "nonlocal spam"
+
+    def do_global():
+        global spam
+        spam = "global spam"
+
+    spam = "test spam"
+    do_local()
+    print("After local assignment:", spam)
+    do_nonlocal()
+    print("After nonlocal assignment:", spam)
+    do_global()
+    print("After global assignment:", spam)
+
+scope_test()
+print("In global scope:", spam)
+```
+
+输出结果是
+
+```Python
+After local assignment: test spam
+After nonlocal assignment: nonlocal spam
+After global assignment: nonlocal spam
+In global scope: global spam
+```
+
+请注意 *局部* 赋值（这是默认状态）不会改变 *scope_test* 对 *spam* 的绑定。 [`nonlocal`](https://docs.python.org/zh-cn/3/reference/simple_stmts.html#nonlocal) 赋值会改变 *scope_test* 对 *spam* 的绑定，而 [`global`](https://docs.python.org/zh-cn/3/reference/simple_stmts.html#global) 赋值会改变模块层级的绑定。
+
+global关键字用来在函数或其它局部作用域中使用全局变量。
+
+nonlocal关键字用来在函数或其它作用域中使用外层（非全局）变量
+
 ### 6.类和对象
 
 > class创建类
@@ -276,6 +318,59 @@
 > super函数
 >
 > 多重继承
+
+定义在类里面,函数外面为静态变量,使用类名访问,(注意,类名调用函数和对象名调用函数的区别)
+
+```Python
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+class MyClass:
+    a = 1
+    def __init__(self):
+        MyClass.a += 1
+
+    def printA(self):
+        print(MyClass.a)
+        print(self)
+
+if __name__ == '__main__':
+    A = MyClass()
+    A.printA()
+    print(A.a)
+
+    B = MyClass()
+    B.printA()
+    print(A.a)
+
+    MyClass.printA(MyClass)
+    MyClass.__init__(MyClass)
+    MyClass.printA(MyClass)
+
+    MyClass.printA(A)
+```
+
+输出:
+
+```
+2
+<__main__.MyClass object at 0x7f9f8f090550>
+2
+3
+<__main__.MyClass object at 0x7f9f8f0397f0>
+3
+3
+<class '__main__.MyClass'>
+4
+<class '__main__.MyClass'>
+4
+<__main__.MyClass object at 0x7f9f8f090550>
+```
+
+
+
+
+
+
 
 ### 7.文件操作
 
