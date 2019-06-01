@@ -1,0 +1,10 @@
+{
+	"name": "药材名称",
+	"whereFind": "查找资料",
+	"info": {
+			"key1": "value1",
+			"key2": "value2",
+			"key3": "value3",
+			"key4": "value4"
+	}
+} 

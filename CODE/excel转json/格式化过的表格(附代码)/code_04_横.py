@@ -20,7 +20,7 @@ def getJson(num, book, firstName):
     # 遍历行, 生成levelDict
     #
     # 循环
-    for index in range(num_cols - 1):
+    for index in range(num_rows - 1):
         levelName = sheet.col_values(0)[index + 1]  # 获取等级名称
 
         # 构建infoDict
@@ -48,17 +48,17 @@ def getJson(num, book, firstName):
             }
         '''
         infoDict = {
-            "常规":{}
+            "常规": {}
         }
 
         # 为了统一格式,加入"常规"类
         # 往常规类别字典里填充项目
-        for col in range(1, num_cols-1):
+        for col in range(1, num_cols - 1):
             col_values = sheet.col_values(col)
             infoDict["常规"][col_values[0]] = {
                 #    类别名称         项目名称
                 "value": col_values[index + 1],
-                "标准": sheet.row_values(index+1)[-1]
+                "标准": sheet.row_values(index + 1)[-1]
             }
 
         levelDict[levelName] = infoDict
