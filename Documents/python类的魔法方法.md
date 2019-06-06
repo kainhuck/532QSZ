@@ -2,7 +2,7 @@
 
 ## \__init__(self, [...)
 
-类似与构造函数(但也有将\__new\_\_()和\_\_init__()合称为构造函数)
+类似与构造函数(真正的是\__new\_\_()和\_\_init__()合称为构造函数),可以称其为初始化方法
 
 实例化操作（“调用”类对象）会创建一个空对象。 许多类喜欢创建带有特定初始状态的自定义实例。 为此类定义可能包含一个名为 [`__init__()`](https://docs.python.org/zh-cn/3/reference/datamodel.html#object.__init__) 的特殊方法，就像这样:
 
@@ -32,7 +32,93 @@ x = MyClass()
 
 ## \__new__(cls, [...)
 
-`__new__` 是在一个对象实例化的时候所调用的第一个方法。它的第一个参数是这个类，其他的参数是用来直接传递给 `__init__` 方法。 
+`__new__` 是在一个对象实例化的时候所调用的第一个方法。它的第一个参数是这个类，其他的参数是用来直接传递给 `__init__` 方法。 可以称其为创造函数(我起的名字)
+
+```python 
+class A(object):
+    def __init__(self):
+        print("这里是__init__方法")
+
+    def __del__(self):
+        print("这里是__del__方法")
+
+    def __new__(cls):
+        print("这里是__new__方法")
+
+a = A()
+```
+
+out
+
+```python 
+这里是__new__方法
+```
+
+注意:
+
+1. 可以看到\__init__和 \_\_del\_\_方法都未被调用,说明对象未被成功创建
+2. \__new__()函数里面的参数是***cls***是一个类
+
+如何创建一个对象:
+
+`需要调用并return父类的__new__方法`
+
+示例2:
+
+```python 
+class A(object):
+    def __init__(self):
+        print("这里是__init__方法")
+
+    def __del__(self):
+        print("这里是__del__方法")
+
+    def __new__(cls):
+        print("这里是__new__方法")
+        return object.__new__(cls)
+
+a = A()
+```
+
+out:
+
+```python 
+这里是__new__方法
+这里是__init__方法
+这里是__del__方法
+```
+
+**使用场景**
+
+创建单例类
+
+```python
+class A(object):
+
+    __isinstance = None
+
+    def __new__(cls):
+        if not cls.__isinstance:
+            cls.__isinstance = object.__new__(cls)
+        return cls.__isinstance
+
+a = A()
+b = A()
+c = A()
+print("a", id(a))
+print("b", id(b))
+print("c", id(c))
+```
+
+out:
+
+```python
+a 139626091296080
+b 139626091296080
+c 139626091296080
+```
+
+可见每次创建的类都是同一个,这样做可在某些时候减少内存开支.
 
 ## \__del__(self, [...)
 
@@ -99,3 +185,7 @@ s
 ## \__dict__
 
  模块对象有一个秘密的只读属性 [`__dict__`](https://docs.python.org/zh-cn/3/library/stdtypes.html#object.__dict__)，它返回用于实现模块命名空间的字典；[`__dict__`](https://docs.python.org/zh-cn/3/library/stdtypes.html#object.__dict__) 是属性但不是全局名称。 显然，使用这个将违反命名空间实现的抽象，应当仅被用于事后调试器之类的场合。
+
+## \__str__()
+
+当实现了该方法的类的对象被打印时,输出该方法的return值
