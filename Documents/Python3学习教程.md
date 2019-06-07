@@ -397,6 +397,28 @@ MyClass.fun()
 10
 ```
 
+#### 在类外面添加属性,方法
+
+Python是一门动态语言,所以可以在运行时添加属性,方法
+
+```Python
+class A():
+    def __init__(self, name):
+        self.name = name
+        
+a = A("a")
+a.age = 10	# 添加属性
+
+# 在类外面定义一个方法,这里是self只是一个参数,名字可以任意
+def run(self):
+    print("---------%s run------"%self.name)
+
+# a.run = run	# 这样定义,a调用run方法时需要传参
+from types import MethodType
+a.run = MethodType(run, a)	# 这样赋值可以直接把a作为参数传给run函数
+a.run()
+```
+
 
 
 
