@@ -555,11 +555,55 @@ finally:
 >
 > import 导入一个模块
 >
-> 自定义一个模块
->
 > \__init__.py文件
 >
 > \__name__ == "\__main__"
+
+#### 自定义模块,发布,安装
+
+0. 确保电脑里装有`pip`
+
+##### 发布
+
+1. 在所要发布的模块同目录下新建`setup.py`文件
+
+2. 写入这些代码
+
+   ```Python
+   from distutils.core import setup
+   info = {
+       "name": "yourPackName",
+       "version": "1.0 or your version",
+       "description": "your description",
+       "author": "your name",
+       "py_modules": [
+           "packName.moduleName"
+       ]
+   }
+   setup(**info)
+   ```
+
+3. 终端输入以下命令
+
+   `python3 setup.py build`
+
+   此时当前文件夹下会生成一个`build`文件夹
+
+4. 终端输入以下命令
+
+   `python3 setup.py sdist`
+
+   此时会在当前文件夹下生成`dist`文件夹,其中放着我们写的模块的压缩包(别人可以拿去安装, 也可以发布到`github`)
+
+##### 安装
+
+1. 解压
+
+   `tar -zxvf packName.tar.gz`
+
+2. 安装
+
+   `sudo python3 setup.py install`
 
 ### 10.正则表达式
 
@@ -1194,7 +1238,7 @@ if match:
 
 - `Match.``string`
 
-  传递到 [`match()`](https://docs.python.org/zh-cn/3/library/re.html?highlight=re#re.Pattern.match) 或 [`search()`](https://docs.python.org/zh-cn/3/library/re.html?highlight=re#re.Pattern.search) 的字符串。
+  传递到 [`match()`](https://docs.python.org/zh-cn/3/library/re.html?highlight=re#re.Pattern.match) 或 [`search()`](https://docs.python.org/zh-cn/3/library/re.html?highlight=re#re.Pattern.search) 的字符串
 
 ## 二.Python进阶
 

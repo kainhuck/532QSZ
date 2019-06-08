@@ -30,7 +30,7 @@ x = MyClass()
 (3.0, -4.5)
 ```
 
-## __new__(cls, [...)
+## \__new__(cls, [...)
 
 `__new__` 是在一个对象实例化的时候所调用的第一个方法。它的第一个参数是这个类，其他的参数是用来直接传递给 `__init__` 方法。 可以称其为创造函数(我起的名字)
 
@@ -189,3 +189,57 @@ s
 ## \__str__()
 
 当实现了该方法的类的对象被打印时,输出该方法的return值
+
+
+
+## \__all__
+
+模块被导入时`from xxxx import *`就会导入所有在`__all__`里的东西(函数,常量,类)
+
+```python
+__all__ = ["f1"]
+
+def f1():
+    print("---f1---")
+
+def f2():
+    print("---f2---")
+
+def f3():
+    print("---f3---")
+```
+
+包定义时写在`__init__.py`文件中,导入包时会执行`__init__.py`文件,用`import`导入一个包时只会执行这个文件,无法使用包内的模块,除非在`__init__.py`文件中导入这个模块
+
+一个`__init__.py`的例子
+
+```Python
+__all__ = ["func", "funcS"]
+
+from . import func
+```
+
+## \__slots__
+
+规定类所有的属性和方法,不可拓展
+
+```python 
+from types import *
+
+class A():
+    __slots__ = ("name", "func", "age", "addr")
+    def __init__(self, name):
+        self.name = name
+
+def func(self):
+    print(self.name)
+
+a = A("a")
+a.func = MethodType(func, a)
+
+a.func()
+
+a.age = 12
+a.addr = "dads"
+```
+
