@@ -243,3 +243,21 @@ a.age = 12
 a.addr = "dads"
 ```
 
+## \__annotations__
+
+函数的注释
+
+```Python
+# 函数注释
+def add(a: "第一个参数注释", b: "第二个数参数注释") -> "返回值的注释":
+    return a + b
+
+print(add.__annotations__)
+```
+
+out:
+
+```
+{'a': '第一个参数注释', 'b': '第二个数参数注释', 'return': '返回值的注释'}
+```
+

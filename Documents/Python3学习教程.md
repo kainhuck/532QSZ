@@ -301,6 +301,117 @@ global关键字用来在函数或其它局部作用域中使用全局变量。
 
 nonlocal关键字用来在函数或其它作用域中使用外层（非全局）变量
 
+#### 函数注释
+
+函数注释用于帮助使用者读懂代码,普遍有两种注释方法
+
+**第一种**
+
+```Python
+# 加法函数
+def add(a: "第一个参数注释", b: "第二个数参数注释") -> "返回值的注释":
+    return a + b
+```
+
+输出函数帮助信息:
+
+```Python
+print(add.__annotations__)
+```
+
+out:
+
+```
+{'a': '第一个参数注释', 'b': '第二个数参数注释', 'return': '返回值的注释'}
+```
+
+使用help查看函数帮助信息
+
+```python 
+help(add)
+```
+
+out:
+
+```
+Help on function add in module __main__:
+
+add(a: '第一个参数注释', b: '第二个数参数注释') -> '返回值的注释'
+    # 加法函数
+```
+
+例子:
+
+```Python
+# 除法函数
+def div(a: "被除数", b: "除数") -> float:
+    return a / b
+```
+
+
+
+**第二种**
+
+```Python
+def sub(a, b):
+    '''
+    减法函数
+    :param a: 第一个参数注释
+    :param b: 第二个数参数注释
+    :return: 返回值的注释
+    '''
+    return a - b
+```
+
+输出函数帮助信息:
+
+```Python
+print(sub.__annotations__)
+```
+
+out:
+
+```
+{}
+```
+
+使用help查看函数的帮助信息
+
+```Python
+help(sub)
+```
+
+out:
+
+```
+Help on function sub in module __main__:
+
+sub(a, b)
+    减法函数
+    :param a: 第一个参数注释
+    :param b: 第二个数参数注释
+    :return: 返回值的注释
+```
+
+例子:
+
+```Python
+def div(a, b):
+    '''
+    除法函数
+    :param a: 被除数
+    :param b: 除数
+    :return: 返回float类型
+    '''
+    return a / b
+```
+
+如果想要详细的写注释,使用第二种
+
+如果注释比较简单,使用第一种
+
+不想选择,两种一起写
+
 ### 6.类和对象
 
 > class创建类
