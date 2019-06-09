@@ -53,6 +53,10 @@ Python3学习教程
 > a = b = 0
 > a, b = 0, 1
 > ```
+>
+> 若要和Python关键字取一样的变量名,则在关键字后面加下划线`_`
+>
+> 如,你想取一个叫`class`的变量名,则应该取成`class_`
 
 ### 1.数字数据类型
 
@@ -94,6 +98,87 @@ Python3学习教程
 >isinstance(变量名, 类型名)	判断变量是否为该类型
 >random模块
 >```
+
+#### `==`和`is`的区别
+
+总的来说`==`判断两个变量的值是否相等,`is`判断两个变量是否指向同一个内存空间(地址是否相等),
+
+但是有个特例,从**-5**到**256**,变量是指向同一个地址:
+
+```Python
+In [42]: a = -6                                                                 
+
+In [43]: b = -6                                                                 
+
+In [44]: a is b                                                                 
+Out[44]: False
+
+In [45]: a = -5                                                                 
+
+In [46]: b = -5                                                          
+
+In [47]: a is b                                                          
+Out[47]: True
+
+In [48]: a = 123                                                         
+
+In [49]: b = 123                                                         
+
+In [50]: a is b                                                          
+Out[50]: True
+
+In [51]: a = 256                                                         
+
+In [52]: b = 256                                                         
+
+In [53]: a is b                                                          
+Out[53]: True
+
+In [54]: a = 257                                                         
+
+In [55]: b = 257                                                         
+
+In [56]: a is b                                                          
+Out[56]: False
+```
+
+#### 深拷贝与浅拷贝
+
+*浅拷贝:只拷贝了一个地址,即和原变量指向同一个地址空间*
+
+*深拷贝:复制了原变脸指向空间里的内容,并开辟了新的空间*
+
+**所有的等号赋值是浅拷贝**
+
+深拷贝需要用到`copy`模块
+
+深拷贝举例:
+
+```python 
+import copy
+
+a = [1, 2, 3, 4]
+
+b = copy.deepcopy(a)
+print("a == b", a == b)
+print("a is b", a is b)
+```
+
+out:
+
+```
+a == b True
+a is b False
+```
+
+几点说明:
+
+deepcopy()函数是会递归深拷贝,即比如列表里面有列表会统统深拷贝
+
+注意copy.copy()函数:
+
+1. 如果拷贝的对象是个可变的则只对第一层深拷贝,
+2. 如果拷贝的对象是个不可变的(比如:元组)则进行浅拷贝
 
 ### 2.列表,元组和字符串类型
 
@@ -532,6 +617,84 @@ a.run()
 
 
 
+#### 私有属性
+
+①.使用两个下划线开头的属性或方法类似与C++的私有方法,类外不可访问,子类不可访问.例:以下的代码会出错:
+
+```Python
+class A(object):
+    def __init__(self):
+        self.__name = "lilei"
+
+a = A()
+
+print(a.__name)
+```
+
+```Python
+class A(object):
+    def __init__(self):
+        self.__name = "lilei"
+
+class B(A):
+    pass
+
+b = B()
+
+print(b.__name)
+```
+
+注意:以下的代码不会报错
+
+```Python
+class A(object):
+    def __init__(self):
+        self.__name = "lilei"
+
+
+a = A()
+
+a.__name = "hanmeimei"
+
+print(a.__name)
+```
+
+这是因为`a.__name = "hanmeimei"`这一句新建立了一个和`__name`同名的属性,听着很奇怪对吧,但是下面这样写就会出错:
+
+```Python
+class A(object):
+    __slots__ = ("__name")		# 注意加了这一句
+    def __init__(self):
+        self.__name = "lilei"
+
+
+a = A()
+
+a.__name = "hanmeimei"
+
+print(a.__name)
+```
+
+强行访问也是可以的,但是不推荐这样做(因为你违背了私有的本意),Python实际上通过重命名来禁止访问的,Python会把`__name`重命名成了`_类名__name`.
+
+②.使用一个下划线开头,无论是子类还是类外都可以访问.例:下面的代码不会报错
+
+```Python
+class A(object):
+    def __init__(self):
+        self._name = "lilei"
+
+class B(A):
+    pass
+b = B()
+a = A()
+
+print(a._name)
+print(b._name)
+```
+
+
+
 
 
 ### 7.文件操作
@@ -687,6 +850,7 @@ finally:
        "version": "1.0 or your version",
        "description": "your description",
        "author": "your name",
+       "author_email": "test@gmail.com", 
        "py_modules": [
            "packName.moduleName"
        ]
