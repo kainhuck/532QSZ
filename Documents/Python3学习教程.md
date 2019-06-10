@@ -693,6 +693,70 @@ print(a._name)
 print(b._name)
 ```
 
+#### 高级的`getter`和`setter`函数
+
+使用`property`便利我们的`getter`和`setter`函数
+
+第一种:
+
+```Python
+class Person(object):
+    __slots__ = ("__name")
+
+    def __init__(self, name):
+        self.__name = name
+
+    def getName(self):
+        print("----gettter----")
+        return self.__name
+
+    def setName(self, name):
+        print("----setter----")
+        if name == "kain huck":
+            print("welcome")
+            self.__name = name
+        else:
+            self.__name = name
+
+    name = property(getName, setName)
+
+
+if __name__ == '__main__':
+    kain = Person("kainsads huck")
+    kain.name = "kain huck"
+    print(kain.name)
+```
+
+第二种:
+
+```Python
+class Person(object):
+    __slots__ = ("__name")
+
+    def __init__(self, name):
+        self.__name = name
+
+    @property
+    def name(self):
+        print("----gettter----")
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        print("----setter----")
+        if name == "kain huck":
+            print("welcome")
+            self.__name = name
+        else:
+            self.__name = name
+
+
+if __name__ == '__main__':
+    kain = Person("kainsads huck")
+    kain.name = "kain huck"
+    print(kain.name)
+```
+
 
 
 
