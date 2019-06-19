@@ -257,3 +257,37 @@ a.sort()
 print(a)	# 输出[3, 4, 12]
 ```
 
+## 生成式
+
+```Python
+In [52]: def gg(): 
+    ...:     for i in range(3): 
+    ...:         yield i 
+    ...:                                                                                          
+
+In [53]: g = gg()                                                                                 
+
+In [54]: next(g)                                                                                  
+Out[54]: 0
+
+In [55]: next(g)                                                                                  
+Out[55]: 1
+
+In [56]: next(g)                                                                                  
+Out[56]: 2
+
+In [57]: def ff(): 
+    ...:     for i in range(3): 
+    ...:         yield i 
+    ...:                                                                                          
+
+In [58]: next(ff())                                                                               
+Out[58]: 0
+
+In [59]: next(ff())                                                                               
+Out[59]: 0
+
+In [60]: next(ff())                                                                                                                                  
+Out[60]: 0
+```
+
