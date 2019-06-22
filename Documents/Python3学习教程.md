@@ -1774,7 +1774,9 @@ next(my_iter)
 
 **send函数**
 
-send函数会把参数传给`yield`左边的变量接收
+send函数会把参数传给`yield`左边的变量接收,
+
+注:第一次使用(没有`next`过)会报错,`send(None)`不会报错
 
 ```Python
 In [1]: def g(): 
