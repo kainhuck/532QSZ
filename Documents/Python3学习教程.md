@@ -497,6 +497,22 @@ def div(a, b):
 
 不想选择,两种一起写
 
+#### 闭包
+
+在函数里面定义函数并且内部函数使用了外部函数的局部变量就叫闭包.
+
+例:
+
+```Python
+def closure(x):
+    y = 0
+
+    def func():
+        return x + y
+
+    return func
+```
+
 ### 6.类和对象
 
 > class创建类
@@ -1715,6 +1731,8 @@ def fib(n):
 
 **next()内置函数**
 
+`__next__()`同样的效果
+
 ```python
 def generator_function():
     for i in range(3):
@@ -1753,6 +1771,46 @@ my_iter = iter(my_string)
 next(my_iter)
 # Output: 'Y'
 ```
+
+**send函数**
+
+send函数会把参数传给`yield`左边的变量接收
+
+```Python
+In [1]: def g(): 
+   ...:     for i in range(10): 
+   ...:         print("---1---") 
+   ...:         a = yield i 
+   ...:         print("a =",a) 
+   ...:         print("---2---") 
+   ...:                                                                                           
+
+In [2]: g = g()                                                                                   
+
+In [3]: next(g)                                                                                   
+---1---
+Out[3]: 0
+
+In [4]: next(g)                                                                                   
+a = None
+---2---
+---1---
+Out[4]: 1
+
+In [5]: g.send(22)                                                                                
+a = 22
+---2---
+---1---
+Out[5]: 2
+
+In [6]: g.send(33)                                                                                
+a = 33
+---2---
+---1---
+Out[6]: 3
+```
+
+
 
 ### 2.Map，Filter 和 Reduce
 
