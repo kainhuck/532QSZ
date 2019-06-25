@@ -432,3 +432,156 @@ ave = reduce(lambda x, y: x + y, aList) / len(aList)
 ## 10.总结
 
 Python的sao操作还有很多,这次希望这次带来的几个用法对你们有所帮助,对于刚接触的人来说很容易忘记,希望大家可以多动手敲敲代码加强记忆,看看你们之前写的代码可不可以用这些sao操作改一改,使你的代码看上去更加精简.
+
+
+
+# 二期
+
+## 1.合并字典
+
+```Python
+In [1]: x = {"a":1}                                                                               
+
+In [2]: y = {"b":2}                                                                               
+
+In [3]: z = {**x,**y}                                                                             
+
+In [4]: z                                                                                         
+Out[4]: {'a': 1, 'b': 2}
+```
+
+## 2.翻转列表
+
+```python
+In [12]: aList = [1,2,3,4,5]                                                                      
+
+In [13]: bList = aList[::-1]    
+    
+    
+In [15]: bList                                                                                    
+Out[15]: [5, 4, 3, 2, 1]
+
+```
+
+## 3.高级拆包
+
+```Python
+In [18]: a, *b, c = 1,2,3,4,5                                                                     
+
+In [19]: a                                                                                        
+Out[19]: 1
+
+In [20]: b                                                                                        
+Out[20]: [2, 3, 4]
+
+In [21]: c                                                                                        
+Out[21]: 5
+```
+
+## 4.yield from
+
+```python 
+In [23]: def func(): 
+    ...:     for i in range(10): 
+    ...:         yield i 
+    ...:         yield i 
+    ...:                                                                                          
+
+In [24]: f = func()                                                                               
+
+In [25]: next(f)                                                                                  
+Out[25]: 0
+
+In [26]: next(f)                                                                                  
+Out[26]: 0
+
+In [27]: next(f)                                                                                  
+Out[27]: 1
+
+In [28]: next(f)                                                                                  
+Out[28]: 1
+
+In [29]: next(f)                                                                                  
+Out[29]: 2
+
+In [30]: def func(): 
+    ...:     for i in range(10): 
+    ...:         yield from [i, i] 
+    ...:                                                                                 
+        
+In [31]: f = func()                                                                               
+
+In [32]: next(f)                                                                                  
+Out[32]: 0
+
+In [33]: next(f)                                                                                  
+Out[33]: 0
+
+In [34]: next(f)                                                                                  
+Out[34]: 1
+
+In [35]: next(f)                                                                                  
+Out[35]: 1
+
+In [36]: next(f)                                                                                  
+Out[36]: 2
+
+In [37]: next(f)                                                                                  
+Out[37]: 2
+
+```
+
+## 5.`in` 代替 `or`
+
+```python 
+In [39]: i = 1                                                                                    
+
+In [40]: if i == 1 or i == 2: 
+    ...:     print("DONE") 
+    ...:                                                                                          
+DONE
+
+In [41]: if i in (1,2): 
+    ...:     print("DONE") 
+    ...:                                                                                          
+DONE
+```
+
+## 6.字典代替多个if else
+
+```python 
+In [45]: i = "b"                                                                                  
+
+In [46]: def func(i): 
+    ...:     if i == "a": 
+    ...:         return 1 
+    ...:     elif i == "b": 
+    ...:         return 2 
+    ...:     elif i == "c": 
+    ...:         return 3 
+    ...:     else: 
+    ...:         return None 
+    ...:                                                                                          
+
+In [47]: func(i)                                                                                  
+Out[47]: 2
+
+In [48]: def func(i): 
+    ...:     return {"a":1, "b":2, "c":3}.get(i) 
+    ...:                                                                                          
+
+In [49]: func(i)                                                                                  
+Out[49]: 2
+```
+
+## 7.列表中出现次数最多的元素
+
+最少同理
+
+```Python
+In [52]: nums = [1,2,3,3]                                                                         
+
+In [53]: max(nums, key=nums.count)                                                                
+Out[53]: 3
+```
+
