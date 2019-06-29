@@ -186,9 +186,96 @@ s
 
  模块对象有一个秘密的只读属性 [`__dict__`](https://docs.python.org/zh-cn/3/library/stdtypes.html#object.__dict__)，它返回用于实现模块命名空间的字典；[`__dict__`](https://docs.python.org/zh-cn/3/library/stdtypes.html#object.__dict__) 是属性但不是全局名称。 显然，使用这个将违反命名空间实现的抽象，应当仅被用于事后调试器之类的场合。
 
-## \__str__()
+## \__str__(),\_\_repr\_\_()
 
 当实现了该方法的类的对象被打印时,输出该方法的return值
+
+一般来说`%r`打印对象的本质
+
+```python
+In [16]: class Test(object): 
+    ...:     def __repr__(self): 
+    ...:         return "in __repr__(self)" 
+    ...:                                                                                          
+
+In [17]: print(Test())                                                                            
+in __repr__(self)
+
+In [18]: class Test(object): 
+    ...:     def __repr__(self): 
+    ...:         return "in __repr__(self)" 
+    ...:     def __str__(self): 
+    ...:         return "in __str__(self)" 
+    ...:                                                                                          
+
+In [19]: print(Test())                                                                            
+in __str__(self)
+
+In [20]: t = Test()                                                                               
+
+In [21]: print("%r" % t)                                                                          
+in __repr__(self)
+
+In [22]: print("%s" % t)                                                                          
+in __str__(self)
+```
+
+%r用rper()方法处理对象
+
+%s用str()方法处理对象
+
+有些情况下，两者处理的结果是一样的，比如说处理int型对象。
+
+例一：
+
+```Python
+print "I am %d years old." % 22
+print "I am %s years old." % 22
+print "I am %r years old." % 22
+```
+
+返回结果：
+
+```Python
+I am 22 years old.
+I am 22 years old.
+I am 22 years old.
+```
+
+另外一些情况两者就不同了
+例二：
+
+```Python
+text = "I am %d years old." % 22
+print "I said: %s." % text
+print "I said: %r." % text
+```
+
+返回结果：
+
+```Python
+I said: I am 22 years old..
+I said: 'I am 22 years old.'. // %r 给字符串加了单引号
+```
+
+再看一种情况
+例三：
+
+```Python
+import datetime
+d = datetime.date.today()
+print "%s" % d
+print "%r" % d
+```
+
+返回结果：
+
+```Python
+2014-04-14
+datetime.date(2014, 4, 14)
+```
+
+可见，%r打印时能够重现它所代表的对象(rper() unambiguously recreate the object it represents)
 
 
 
@@ -261,3 +348,27 @@ out:
 {'a': '第一个参数注释', 'b': '第二个数参数注释', 'return': '返回值的注释'}
 ```
 
+## \__nonzero\_\_,\_\_bool__
+
+py2中为`__nonzero__`,py2中为`__bool__`
+
+类的**nonzero**方法用于将类转换为布尔值。通常在用类进行判断和将类转换成布尔值时调用。比如语句if A: print 'foo'中就会调用A.**nonzero**()来判断。下面这个程序应该能帮助你理解**nonzero**的作用。
+
+```python 
+class A:
+  def __nonzero__(self):
+    print 'A._nonzero__()'
+    return True
+
+print 'A is not zero' if A() else 'A is zero'
+print bool(A())
+```
+
+output：
+
+```python 
+A._nonzero__()
+A is not zero
+A._nonzero__()
+True
+```
