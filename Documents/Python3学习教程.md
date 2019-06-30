@@ -548,7 +548,7 @@ def closure(x):
 >
 > 继承
 >
-> super函数
+> super函数:   子类加上这句话 `super().__init__()`
 >
 > 多重继承
 
