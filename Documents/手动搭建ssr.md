@@ -46,7 +46,7 @@ chmod +x bbr.sh
 
 ## 4.加速(Cent7)
 
-速锐加速
+锐速加速
 
 ```shell
 wget --no-check-certificate -O rskernel.sh https://raw.githubusercontent.com/hombo125/doubi/master/rskernel.sh && bash rskernel.sh
