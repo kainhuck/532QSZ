@@ -1817,3 +1817,9 @@ key_bindings:
 
 ```
 
+3. vim配置
+
+```
+https://github.com/humiaozuzu/dot-vimrc
+```
+
