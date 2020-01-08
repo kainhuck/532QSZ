@@ -1817,9 +1817,18 @@ key_bindings:
 
 ```
 
-3. vim配置
+## 3. vim配置
 
 ```
 https://github.com/humiaozuzu/dot-vimrc
 ```
 
+
+
+## 4. 使用i3lock-fancy代替原来的i3lock
+
+```
+yay i3lock-fancy
+```
+
+在config中替换k对应的那一行
