@@ -59,5 +59,6 @@ cat /etc/v2ray/config.json
 
 ```
 yay -S qv2ray
+pacman -S v2ray
 ```
 
