@@ -570,7 +570,7 @@ sudo mysqladmin -u root password '123456'
 3. 复制到grub主题目录
 
    ```
-   sudo cp -r 主题包名 /boot/grub/themes/  
+   sudo cp -r 主题包名 /usr/share/grub/themes/  
    ```
 
 4. 修改文件添加主题
