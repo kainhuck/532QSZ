@@ -1,0 +1,24 @@
+{"level":"debug","ts":1594358507.3713295,"msg":"Trying to hit GET request for www.baidu.com"}
+{"level":"error","ts":1594358507.3717337,"msg":"Error fetching URL www.baidu.com : Error = Get \"www.baidu.com\": unsupported protocol scheme \"\""}
+{"level":"debug","ts":1594358507.3717678,"msg":"Trying to hit GET request for http://www.baidu.com"}
+{"level":"info","ts":1594358507.4160995,"msg":"SUccess! statusCode = 200 OK for URL http://www.baidu.com"}
+{"level":"debug","ts":1594358536.2353942,"msg":"Trying to hit GET request for www.baiasdsadasdasddu.com"}
+{"level":"error","ts":1594358536.2357306,"msg":"Error fetching URL www.baiasdsadasdasddu.com : Error = Get \"www.baiasdsadasdasddu.com\": unsupported protocol scheme \"\""}
+{"level":"debug","ts":1594358536.2395716,"msg":"Trying to hit GET request for http://www.163.com"}
+{"level":"info","ts":1594358536.2761698,"msg":"SUccess! statusCode = 403 Forbidden for URL http://www.163.com"}
+1.594358658905915e+09	debug	Trying to hit GET request for www.baiasdsadasdasddu.com
+1.5943586589062288e+09	error	Error fetching URL www.baiasdsadasdasddu.com : Error = Get "www.baiasdsadasdasddu.com": unsupported protocol scheme ""
+1.594358658906248e+09	debug	Trying to hit GET request for http://www.163.com
+1.5943586589510312e+09	info	SUccess! statusCode = 403 Forbidden for URL http://www.163.com
+2020-07-10T13:31:32.440+0800	DEBUG	Trying to hit GET request for www.baiasdsadasdasddu.com
+2020-07-10T13:31:32.441+0800	ERROR	Error fetching URL www.baiasdsadasdasddu.com : Error = Get "www.baiasdsadasdasddu.com": unsupported protocol scheme ""
+2020-07-10T13:31:32.441+0800	DEBUG	Trying to hit GET request for http://www.163.com
+2020-07-10T13:31:32.488+0800	INFO	Success! statusCode = 403 Forbidden for URL http://www.163.com
+{"level":"DEBUG","ts":"2020-07-10T13:31:57.972+0800","msg":"Trying to hit GET request for www.baiasdsadasdasddu.com"}
+{"level":"ERROR","ts":"2020-07-10T13:31:57.973+0800","msg":"Error fetching URL www.baiasdsadasdasddu.com : Error = Get \"www.baiasdsadasdasddu.com\": unsupported protocol scheme \"\""}
+{"level":"DEBUG","ts":"2020-07-10T13:31:57.973+0800","msg":"Trying to hit GET request for http://www.163.com"}
+{"level":"INFO","ts":"2020-07-10T13:31:58.013+0800","msg":"Success! statusCode = 403 Forbidden for URL http://www.163.com"}
+{"level":"DEBUG","ts":"2020-07-10T13:33:09.528+0800","caller":"go_zap_日志/file.go:46","msg":"Trying to hit GET request for www.baiasdsadasdasddu.com"}
+{"level":"ERROR","ts":"2020-07-10T13:33:09.530+0800","caller":"go_zap_日志/file.go:49","msg":"Error fetching URL www.baiasdsadasdasddu.com : Error = Get \"www.baiasdsadasdasddu.com\": unsupported protocol scheme \"\""}
+{"level":"DEBUG","ts":"2020-07-10T13:33:09.530+0800","caller":"go_zap_日志/file.go:46","msg":"Trying to hit GET request for http://www.163.com"}
+{"level":"INFO","ts":"2020-07-10T13:33:09.571+0800","caller":"go_zap_日志/file.go:51","msg":"Success! statusCode = 403 Forbidden for URL http://www.163.com"}
